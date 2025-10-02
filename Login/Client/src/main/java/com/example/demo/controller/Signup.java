@@ -26,6 +26,7 @@ public class Signup {
         if(bindingresult.hasErrors()){
             return "Signup";
         }
+        
         return "";
     }
 }
