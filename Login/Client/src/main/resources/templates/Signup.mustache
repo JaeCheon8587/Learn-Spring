@@ -1,0 +1,31 @@
+<html>
+    <head>
+        <h1>회원 가입</h1>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    </head>
+    <body>
+        <form action="/Signup/UserAccount" method="post" >
+            <div>
+                <label class="form-label">ID : </label>
+                <input type="text" class="form-control" name="id"/>
+            </div>
+            <div>
+                <label class="form-label">Password : </label>
+                <input type="text" class="form-control" name="pw"/>
+            </div>
+            <div>
+                <label class="form-label">name : </label>
+                <input type="text"  class="form-control" name="name"/>
+            </div>
+                <label class="form-label">E-mail : </label>
+                <input type="text" class="form-control" name="email"/>
+            <div>
+                <label class="form-label">Personal Number : </label>
+                <input type="text" class="form-control" name="personalNumber"/>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary">회원 가입</button>
+            </div>
+        </form>
+    </body>
+</html>

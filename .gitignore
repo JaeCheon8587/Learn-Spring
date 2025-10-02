@@ -1,0 +1,26 @@
+# ===Utility===
+*.zip
+
+# ===VS Code===
+.vscode/
+
+# ===OS===
+.DS_Store
+Thumbs.db
+
+# ===Java/Build===
+# Maven
+target/
+# Gradle
+.gradle/
+build/
+# 기타 빌드 산출물
+out/
+bin/
+
+# === Logs / Temp ===
+logs/
+*.log
+*.tmp
+hs_err_pid*
+replay_pid*
