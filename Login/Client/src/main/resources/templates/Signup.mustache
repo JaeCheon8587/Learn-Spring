@@ -27,5 +27,12 @@
                 <button type="submit" class="btn btn-primary">회원 가입</button>
             </div>
         </form>
+        {{#popupMessage}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                alert("{{popupMessage}}");
+            });
+        </script>
+        {{/popupMessage}}
     </body>
 </html>

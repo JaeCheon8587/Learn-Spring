@@ -11,7 +11,7 @@ import com.example.demo.dto.FindIDRequest;
 import jakarta.validation.Valid;
 
 @Controller
-public class FindID {
+public class FindIDController {
 
 	@PostMapping("/Find/ID")
 	public String findUserAccountID(

@@ -11,7 +11,7 @@ import com.example.demo.dto.*;
 import jakarta.validation.Valid;
 
 @Controller
-public class FindPW {
+public class FindPWController {
     @PostMapping("/Find/PW")
     public String FindUserAccountPW(@Valid @ModelAttribute FindPWRequest pwRequest,
                                     BindingResult bindingResult,

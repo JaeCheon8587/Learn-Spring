@@ -1,4 +1,5 @@
-package com.example.demo.dto;
+package com.example.demo.user.dto;
+
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -14,3 +15,4 @@ public class LoginRequest {
     private String pw;
     
 }
+
