@@ -19,6 +19,19 @@ import lombok.extern.slf4j.Slf4j;
 public class SignupController {
     @Autowired
     private SignupService signupService;
+    
+    private void SetUserAccountToModel(Model model, SignupRequest signupRequest){
+        model.addAttribute("id", signupRequest.getId());
+        model.addAttribute("password", signupRequest.getPw());
+        model.addAttribute("name", signupRequest.getName());
+        model.addAttribute("email", signupRequest.getEmail());
+        model.addAttribute("personalNumber", signupRequest.getPersonalNumber());
+    }
+
+    private void SetPopupToModel(Model model, String type, String message){
+        model.addAttribute("popupType", type);
+        model.addAttribute("popupMessage", message);
+    }
 
     @PostMapping("/Signup/UserAccount")
     public String SignupUserAccount(@Valid @ModelAttribute SignupRequest signupRequest,
@@ -37,22 +50,22 @@ public class SignupController {
             SignupReply reply = signupService.signupToServer(signupRequest);
             if(!reply.getRet()){
                 log.error("회원 가입을 할 수 없습니다. 이유 : {}", reply.getMsg());
-                model.addAttribute("popupType", "Warning");
-                model.addAttribute("popupMessage", "회원 가입을 할 수 없습니다. 이유 : " + reply.getMsg());
 
-                return "Signup";
+                SetPopupToModel(model, "Warning", "회원 가입을 할 수 없습니다. 이유 : " + reply.getMsg());
+                SetUserAccountToModel(model, signupRequest);
             }
             else{
                 log.info("회원 가입이 완료되었습니다.");
-                model.addAttribute("popupType", "Success");
-                model.addAttribute("popupMessage", "회원 가입이 완료되었습니다.");
-                return "Signup";
+
+                SetPopupToModel(model, "Success", "회원 가입이 완료되었습니다.");
+                SetUserAccountToModel(model, signupRequest);
             }
+            
+            return "Signup";
         } 
         catch(RuntimeException e){
             log.error("회원 가입 중 오류가 발생하였습니다. 이유 : {}", e.getMessage());
-            model.addAttribute("popupType", "Error");
-            model.addAttribute("popupMessage", "회원 가입 중 오류가 발생하였습니다. 이유 : " + e.getMessage());
+            SetPopupToModel(model, "Error", "회원 가입 중 오류가 발생하였습니다. 이유 : " + e.getMessage());
             return "Signup";
         }
     }

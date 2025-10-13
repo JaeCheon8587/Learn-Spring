@@ -7,21 +7,21 @@
         <form action="/Signup/UserAccount" method="post" >
             <div>
                 <label class="form-label">ID : </label>
-                <input type="text" class="form-control" name="id"/>
+                <input type="text" class="form-control" name="id" {{#id}}value="{{id}}"{{/id}}/>
             </div>
             <div>
                 <label class="form-label">Password : </label>
-                <input type="text" class="form-control" name="pw"/>
+                <input type="text" class="form-control" name="pw" {{#password}}value="{{password}}"{{/password}}/>
             </div>
             <div>
                 <label class="form-label">name : </label>
-                <input type="text"  class="form-control" name="name"/>
+                <input type="text"  class="form-control" name="name" {{#name}}value="{{name}}"{{/name}}/>
             </div>
                 <label class="form-label">E-mail : </label>
-                <input type="text" class="form-control" name="email"/>
+                <input type="text" class="form-control" name="email" {{#email}}value="{{email}}"{{/email}}/>
             <div>
                 <label class="form-label">Personal Number : </label>
-                <input type="text" class="form-control" name="personalNumber"/>
+                <input type="text" class="form-control" name="personalNumber" {{#personalNumber}}value="{{personalNumber}}"{{/personalNumber}}/>
             </div>
             <div>
                 <button type="submit" class="btn btn-primary">회원 가입</button>

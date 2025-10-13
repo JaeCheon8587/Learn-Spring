@@ -2,16 +2,16 @@ package com.example.demo.controller;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.Service.LoginService;
+import com.example.demo.dto.LoginReply;
 import com.example.demo.dto.LoginRequest;
 
 import jakarta.validation.Valid;
@@ -35,23 +35,24 @@ public class LoginController {
 	                        BindingResult bindingResult,
 	                        Model model)
 	{
-		if(bindingResult.hasErrors()){
-			return "/Login";
-		}
+        if(bindingResult.hasErrors()){
+            model.addAttribute("Popup", "올바른 정보를 입력해주세요. ");
+            return "Login";
+        }
 
 		try {
-			loginService.loginToServer(userAccount);
-			// model.addAttribute("result", response);
-			// model.addAttribute("username", userAccount.getName());
+			LoginReply reply = loginService.loginToServer(userAccount);
+			model.addAttribute("Popup", "로그인 성공");
 
 			return "LoginSuccess";
 
-		} catch (Exception e) {
-			log.error("REST API call failed", e);
-			model.addAttribute("error", "서버와의 통신에 실패했습니다: " + e.getMessage());
+		} 
+		catch (RuntimeException e) {
+			model.addAttribute("Popup", "로그인 실패: " + e.getMessage());
 			return "Login";
 		}
 	}
+	
     @GetMapping("/Signup")
     public String signUpUser(){
         return "Signup";
