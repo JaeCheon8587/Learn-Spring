@@ -3,15 +3,12 @@ package com.example.demo.Service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
+
 import org.springframework.web.client.RestTemplate;
 
 import com.example.demo.dto.LoginReply;
 import com.example.demo.dto.LoginRequest;
 
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -36,7 +33,7 @@ public class LoginService {
         
         if(!reply.getRet()){
             log.error("Login Failed: {}", reply.getMsg());
-            throw new RuntimeException("Login Failed: " + reply.getMsg());
+            return reply;
         }
         
         log.info("Login Success");

@@ -1,33 +1,26 @@
 # Repository Guidelines
 
 ## Project Structure & Module Organization
-- `src/main/java/com/example/demo`: Spring Boot entry point and HTTP controllers; add new packages such as `service` or `repository` under this namespace.
-- `src/main/resources/templates`: Mustache views (e.g., `Login.mustache`). Keep templates single-responsibility and pair each controller route with a template here.
-- `src/main/resources/static`: Place CSS, JS, and image assets served directly by Spring Boot.
-- `src/main/resources/application.properties`: Centralize environment configuration, including H2 settings and profile overrides.
-- `src/test/java`: JUnit tests mirroring the main package structure.
-- `build/`: Generated artifacts that should remain untouched.
+- `src/main/java/com/example/demo`: Spring Boot entry point plus `controller`, `service`, and `repository` packages; keep controllers thin and delegate logic to services.
+- `src/main/resources/templates`: One Mustache view per route; share reusable fragments under `templates/fragments` when layouts repeat.
+- `src/main/resources/static`: Serve CSS, JS, and images directly from this folder.
+- `src/main/resources/application.properties`: Centralize profile toggles, H2 settings, and mail or OAuth keys with environment overrides.
+- `src/test/java` & `src/test/resources`: Mirror production packages and store fixtures or seeded SQL used by integration tests.
 
-## Build, Test & Development Commands
-- `./gradlew bootRun` – launches the Spring Boot app with the embedded server for local development.
-- `./gradlew test` – runs the JUnit 5 suite; ensure it passes before submitting changes.
-- `./gradlew build` – compiles, runs tests, and produces the executable jar in `build/libs`.
-- `./gradlew clean` – removes compiled output; run before reproducing build issues.
+## Build, Test, and Development Commands
+- `./gradlew bootRun`: Launch the app with hot reload; confirm controller wiring and templates while iterating locally.
+- `./gradlew test`: Run the full JUnit 5 suite; ensure green runs before every push or pull request.
+- `./gradlew build`: Compile sources, execute tests, and produce the runnable JAR in `build/libs`.
+- `./gradlew clean`: Remove previous build outputs when switching branches or resetting environments.
 
 ## Coding Style & Naming Conventions
-- Target Java 21 and rely on the Gradle toolchain to enforce versioning.
-- Preserve the existing tab-based indentation and place braces on the same line as declarations.
-- Name classes and Spring components with PascalCase (for example, `LoginController`), methods and fields in camelCase, and Mustache templates with TitleCase file names.
-- Favor constructor injection for Spring beans and keep controllers thin, delegating logic to service classes.
+Target Java 21 via the Gradle toolchain. Use tabs for indentation and place braces on the same line as declarations. Name classes and components in PascalCase (for example, `LoginController`), methods and fields in camelCase, and constants in UPPER_SNAKE_CASE. Mustache templates use TitleCase filenames that mirror controller methods. Prefer constructor injection for Spring beans and funnel complex rules into services to keep controllers focused on request handling.
 
 ## Testing Guidelines
-- Write JUnit 5 tests under `src/test/java`, following the same package as the code under test and suffixing classes with `Tests`.
-- Prefer `@WebMvcTest` for controller slices and `@SpringBootTest` only when full context loading is required.
-- Add mocked H2 data or test fixtures in `src/test/resources` when integration coverage is needed.
-- Run `./gradlew test` before every push and ensure new features include assertions that guard regressions.
+Author JUnit 5 tests alongside production code, suffixing classes with `Tests` and matching package paths. Use `@WebMvcTest` for controller slices, `@DataJpaTest` for repository logic, and reserve `@SpringBootTest` for scenarios requiring the full context. Seed H2 fixtures in `src/test/resources` and run `./gradlew test` before committing.
 
 ## Commit & Pull Request Guidelines
-- Follow Conventional Commits (`feat:`, `fix:`, `test:`, etc.) with concise subject lines under 60 characters and optional bullet points in the body.
-- Reference issue IDs in the body (for example, `Refs #12`) and describe any configuration changes.
-- PRs should summarize the change, list manual or automated tests run, and include UI screenshots when templates or static assets change.
-- Keep PRs focused; split unrelated changes into separate branches and ensure reviewers can reproduce results with the commands above.
+Follow Conventional Commit subjects (`feat:`, `fix:`, `test:`, etc.) with subjects under 60 characters. Reference issue IDs in commit bodies (for example, `Refs #12`) and document configuration changes. Pull requests should summarize the change set, list validation commands, and attach UI screenshots whenever templates or static assets change. Keep PRs narrow so reviewers can reproduce results with the commands above.
+
+## Security & Configuration Tips
+Store secrets in environment variables instead of source files and load them through Spring profiles. Disable the H2 console for deployed environments (`spring.h2.console.enabled=false`) and reset the in-memory database with `./gradlew clean` if schema drift is suspected. Review `application.properties` for sensitive defaults before shipping.

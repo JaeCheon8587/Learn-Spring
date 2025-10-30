@@ -5,7 +5,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 Spring Boot 3.5.6 application built with Java 21 and Gradle. This is a login server demo project using:
-- **Spring Data JPA** with H2 in-memory database
+- **Spring Data JPA** with Oracle database (with H2 available for testing)
+- **Jakarta Validation** for request validation
 - **Mustache** templating engine for views
 - **Lombok** for reducing boilerplate code
 - Standard Spring Boot web stack
@@ -60,9 +61,15 @@ Spring Boot 3.5.6 application built with Java 21 and Gradle. This is a login ser
 src/
 ├── main/
 │   ├── java/com/example/demo/
-│   │   └── DemoApplication.java          # Main Spring Boot application entry point
+│   │   ├── DemoApplication.java          # Main Spring Boot application entry point
+│   │   └── user/                         # User domain module
+│   │       ├── controller/               # REST controllers
+│   │       ├── dto/                      # Data Transfer Objects with validation
+│   │       ├── entity/                   # JPA entities
+│   │       ├── repository/               # Spring Data JPA repositories (when created)
+│   │       └── service/                  # Business logic services (when created)
 │   └── resources/
-│       ├── application.properties        # Application configuration
+│       ├── application.properties        # Application configuration (Oracle DB settings)
 │       ├── templates/                    # Mustache templates for views
 │       └── static/                       # Static resources (CSS, JS, images)
 └── test/
@@ -73,23 +80,37 @@ src/
 ## Architecture Notes
 
 ### Database Configuration
-- H2 in-memory database (runtime dependency)
-- Spring Data JPA for data access layer
-- Database console available at `/h2-console` (when enabled in application.properties)
+- **Primary**: Oracle database (ojdbc8 driver)
+  - Connection: `jdbc:oracle:thin:@localhost:1521/ORCLPDB`
+  - User: `app_user`
+  - Hibernate DDL mode: `update` (auto-creates/updates tables)
+- **Testing**: H2 in-memory database available as runtime dependency
+- Spring Data JPA for data access layer with Oracle dialect
+
+### Domain-Driven Package Structure
+The project follows a domain-driven structure under `com.example.demo`:
+- **user/** - User domain module containing:
+  - **controller/** - REST API endpoints with `@RestController`
+  - **dto/** - Request/response objects with Jakarta Validation annotations
+  - **entity/** - JPA entities with proper `@Id` mapping
+  - **repository/** - Spring Data JPA repositories (to be created)
+  - **service/** - Business logic layer (to be created)
 
 ### View Layer
 - Mustache templating engine configured
 - Templates go in `src/main/resources/templates/`
 - Static assets go in `src/main/resources/static/`
 
-### Package Structure
-- Base package: `com.example.demo`
-- Main class: `DemoApplication` with `@SpringBootApplication`
-- Following standard Spring Boot conventions
+### Validation
+- Jakarta Validation configured with `spring-boot-starter-validation`
+- DTOs use annotations like `@NotBlank` for request validation
+- Controllers use `@Valid` with `BindingResult` for error handling
 
 ## Development Notes
 
 - Java 21 toolchain configured
-- Lombok annotations available (ensure IDE plugin installed)
+- Lombok annotations used extensively (`@Getter`, `@Setter`, `@NoArgsConstructor`, `@AllArgsConstructor`, `@ToString`, `@Slf4j`)
+- Ensure Lombok plugin is installed in your IDE
 - Tests use JUnit 5 (JUnit Platform)
-- Follow Spring Boot best practices for package organization (controllers, services, repositories, entities)
+- When creating new entities, ensure proper JPA annotations (`@Entity`, `@Id`, `@GeneratedValue`)
+- When creating repositories, extend `JpaRepository<Entity, IdType>`

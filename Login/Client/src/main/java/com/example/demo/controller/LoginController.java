@@ -29,29 +29,6 @@ public class LoginController {
     public String accessLogin(){
         return "Login";
     }
-
-	@PostMapping("/Login/UserAccount")
-	public String tryLogin(@Valid @ModelAttribute LoginRequest userAccount,
-	                        BindingResult bindingResult,
-	                        Model model)
-	{
-        if(bindingResult.hasErrors()){
-            model.addAttribute("Popup", "올바른 정보를 입력해주세요. ");
-            return "Login";
-        }
-
-		try {
-			LoginReply reply = loginService.loginToServer(userAccount);
-			model.addAttribute("Popup", "로그인 성공");
-
-			return "LoginSuccess";
-
-		} 
-		catch (RuntimeException e) {
-			model.addAttribute("Popup", "로그인 실패: " + e.getMessage());
-			return "Login";
-		}
-	}
 	
     @GetMapping("/Signup")
     public String signUpUser(){
@@ -65,4 +42,35 @@ public class LoginController {
     public String findUserPW(){
         return "FindPW";
     }
+    
+    private void SetPopupToModel(LoginReply reply, Model model){
+        if(!reply.getRet()){
+            model.addAttribute("Popup", "로그인 실패: " + reply.getMsg());
+        }
+
+		model.addAttribute("Popup", "로그인 성공");
+    }
+
+	@PostMapping("/Login/UserAccount")
+	public String tryLogin(@Valid @ModelAttribute LoginRequest userAccount,
+	                        BindingResult bindingResult,
+	                        Model model)
+	{
+        if(bindingResult.hasErrors()){
+            model.addAttribute("Popup", "올바른 정보를 입력해주세요. ");
+            return "Login";
+        }
+
+		try {
+			LoginReply reply = loginService.loginToServer(userAccount);
+            SetPopupToModel(reply, model);
+
+			return "Login";
+
+		} 
+		catch (RuntimeException e) {
+			model.addAttribute("Popup", "로그인 실패: " + e.getMessage());
+			return "Login";
+		}
+	}
 }

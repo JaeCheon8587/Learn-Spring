@@ -3,6 +3,7 @@ package com.example.demo.user.service;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.user.dto.SignupReply;
@@ -17,11 +18,16 @@ import lombok.extern.slf4j.Slf4j;
 public class SignupService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    private String GetEncodedPassword(String rawPassword){
+        return passwordEncoder.encode(rawPassword);
+    }
     
     public SignupReply signup(SignupRequest signupRequest)
     {
         SignupReply signupReply = null;
-
         Optional<StdUser> result = userRepository.findById(signupRequest.getId());
         
         if(!result.isEmpty())
@@ -38,6 +44,8 @@ public class SignupService {
             return signupReply;
         }
         
+        signupRequest.setPw(GetEncodedPassword(signupRequest.getPw()));
+
         StdUser savedUser = userRepository.save(signupRequest.toStdUser());
         signupReply = new SignupReply(true, "Signup Success", savedUser.toDto());
 

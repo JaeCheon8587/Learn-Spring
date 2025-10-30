@@ -9,6 +9,7 @@ Spring Boot 3.5.6 application built with Java 21 using Gradle. This is a user au
 - **Mustache** templating engine for server-side rendering
 - **Lombok** for reducing boilerplate code
 - **Spring Web MVC** for HTTP request handling
+- **Jakarta Validation** for server-side form validation
 
 ## Development Commands
 
@@ -46,11 +47,12 @@ Removes all compiled output from `build/` directory.
 
 ### Package Structure
 - **`com.example.demo`**: Root package containing `DemoApplication` (Spring Boot entry point)
-- **`com.example.demo.controller`**: HTTP request handlers (e.g., `Login`, `SingUp`)
-- **`com.example.demo.data`**: Data models and DTOs (e.g., `UserAccount`)
+- **`com.example.demo.controller`**: HTTP request handlers (`Login`, `Signup`, `FindID`, `FindPW`)
+- **`com.example.demo.dto`**: Data Transfer Objects for form binding and validation (`LoginRequest`, `SignupRequest`, `FindIDRequest`, `FindPWRequest`)
 
 Future service layer classes should go in `com.example.demo.service`.
 Future repository interfaces should go in `com.example.demo.repository`.
+Future entity classes should go in `com.example.demo.entity`.
 
 ### Current Controllers
 The `Login` controller (`controller/Login.java`) handles authentication-related GET routes:
@@ -69,8 +71,14 @@ Mustache templates are in `src/main/resources/templates/`:
 
 Each controller method returning a String corresponds to a template name.
 
-### Data Model
-`UserAccount` is a Lombok-annotated POJO with `id` and `pw` fields. Currently used for form binding but not yet persisted to H2 database.
+### Data Transfer Objects (DTOs)
+All DTOs are Lombok-annotated POJOs with Jakarta validation constraints:
+- **`LoginRequest`**: User login form with `id`, `pw`, `name`, `email`, `personalNumber` fields
+- **`SignupRequest`**: User signup form with the same fields as `LoginRequest`
+- **`FindIDRequest`**: ID recovery form
+- **`FindPWRequest`**: Password recovery form
+
+Each field uses `@NotBlank` validation with Korean error messages. DTOs are currently used for form binding but data is not yet persisted to H2 database.
 
 ## Key Technologies
 
@@ -78,7 +86,13 @@ Each controller method returning a String corresponds to a template name.
 The project uses Java 21 language features. Gradle toolchain enforces this version.
 
 ### Lombok
-All data classes use Lombok annotations (`@Getter`, `@Setter`, `@AllArgsConstructor`, etc.). When creating new models, follow the pattern in `UserAccount.java`.
+All DTOs use Lombok annotations (`@Getter`, `@Setter`, `@NoArgsConstructor`, `@AllArgsConstructor`). When creating new DTOs or entities, follow the pattern in existing DTO classes.
+
+### Jakarta Validation
+Form validation uses Jakarta Validation API (`@Valid`, `@NotBlank`, etc.). All controller methods handling forms should:
+1. Use `@Valid` annotation on `@ModelAttribute` parameters
+2. Include `BindingResult` parameter to capture validation errors
+3. Return to the same form view when `bindingResult.hasErrors()` is true
 
 ### Spring Boot Auto-configuration
 The application relies heavily on Spring Boot's auto-configuration. The H2 database is configured automatically; explicit datasource configuration can be added to `application.properties` if needed.
@@ -110,10 +124,9 @@ Use constructor injection for Spring beans. Keep controllers thin; business logi
 ## Important Notes
 
 ### Incomplete Implementation
-The `Login.tryLogin()` method at `controller/Login.java:19` has a TODO comment indicating REST API integration is needed. This endpoint currently returns an empty string.
-
-### File Naming Issue
-`SingUp.Java` should be renamed to `SignUp.java` for consistency with Java naming conventions.
+Both authentication endpoints need REST API integration:
+- `Login.tryLogin()` at `controller/Login.java:24` - returns empty string after validation
+- `Signup.SignupUserAccount()` at `controller/Signup.java:17` - has comments outlining needed implementation (REST API call and result rendering)
 
 ### No Service Layer Yet
 Currently controllers directly handle business logic. As the application grows, introduce a service layer between controllers and repositories.

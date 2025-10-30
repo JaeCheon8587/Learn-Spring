@@ -24,5 +24,12 @@
         <a>  |  </a>
         <a href="/FindPW">비밀번호 찾기</a>
     </div>
+    {{#Popup}}
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                alert("{{Popup}}");
+            });
+        </script>
+    {{/Popup}}
 </body>
 </html>
