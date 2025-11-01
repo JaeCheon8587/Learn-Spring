@@ -25,30 +25,32 @@ public class SignupService {
         return passwordEncoder.encode(rawPassword);
     }
     
+    private void ValidateExistUser(String id){
+         Optional<StdUser> user = userRepository.findById(id);
+         if(!user.isEmpty()){
+            throw new RuntimeException("Signup failed. User already exists.");
+         }
+    }
+    private StdUser EncodeStdUserPw(SignupRequest signupRequest){
+            signupRequest.setPw(GetEncodedPassword(signupRequest.getPw()));
+            return signupRequest.toStdUser();
+    }
+    private StdUser SaveUser(SignupRequest signupRequest) throws RuntimeException {
+        StdUser stdUser = EncodeStdUserPw(signupRequest);
+        return userRepository.save(stdUser);
+    }
+
     public SignupReply signup(SignupRequest signupRequest)
     {
-        SignupReply signupReply = null;
-        Optional<StdUser> result = userRepository.findById(signupRequest.getId());
-        
-        if(!result.isEmpty())
-        {
-            StdUser stdUser = result.get();        
-            if(stdUser != null){
-                log.info("User already exists. Signup Information : {}", stdUser.toString());
-                signupReply = new SignupReply(false, "User already exists.", stdUser.toDto());
-            }
-            else{
-                signupReply = new SignupReply(false, "Unknown Error", null);
-            }
+        try{
+            ValidateExistUser(signupRequest.getId());
 
-            return signupReply;
+            StdUser savedUser = SaveUser(signupRequest);
+            return new SignupReply(true, "Signup Success", savedUser.toDto());   
         }
-        
-        signupRequest.setPw(GetEncodedPassword(signupRequest.getPw()));
-
-        StdUser savedUser = userRepository.save(signupRequest.toStdUser());
-        signupReply = new SignupReply(true, "Signup Success", savedUser.toDto());
-
-        return signupReply;
+        catch(RuntimeException ex){
+            log.error("Signup Service Error : {}", ex.getMessage());
+            return new SignupReply(false, ex.getMessage(), null);
+        }        
     }
 }

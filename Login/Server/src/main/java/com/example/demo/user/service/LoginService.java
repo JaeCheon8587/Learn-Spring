@@ -44,7 +44,7 @@ public class LoginService {
         log.info("Login attempt for user: {}", loginRequest.getId());
 
         try {
-            StdUser user = findUserById(loginRequest.getId());
+            StdUser user = getStdUserById(loginRequest.getId());
             validatePassword(loginRequest.getPw(), user.getPassword());
             return createSuccessReply(user);
 
@@ -54,7 +54,7 @@ public class LoginService {
         }
     }
 
-    private StdUser findUserById(String userId) {
+    private StdUser getStdUserById(String userId) {
         return userRepository.findById(userId)
             .orElseThrow(() -> new RuntimeException("Login failed. User not found."));
     }

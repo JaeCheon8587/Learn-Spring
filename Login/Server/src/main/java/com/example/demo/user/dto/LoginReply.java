@@ -17,5 +17,6 @@ public class LoginReply {
         this.ret = ret;
         this.msg = msg;
         this.userAccount = userAccount;
+        this.token = null;
     }
 }
